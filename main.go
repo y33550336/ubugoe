@@ -9,7 +9,6 @@ import (
 	traq "github.com/traPtitech/go-traq"
 )
 
-
 func main() {
 	token := os.Getenv("TRAQ_TOKEN")
 
@@ -22,9 +21,13 @@ func main() {
 		userID := c.Param("userId")
 		//fmt.Println(channelID)
 
-		channelList, _, _ := client.ChannelApi.GetChannels(auth).Path("gps/times/" + userID).
+		channelList, _, err := client.ChannelApi.GetChannels(auth).Path("gps/times/" + userID).
 			Execute()
-		if len(channelList.Public) == 0{
+		if err != nil {
+			c.Logger().Error(err)
+			return c.String(500, "something wrong")
+		}
+		if len(channelList.Public) == 0 {
 			return c.String(404, "No channel")
 		}
 
