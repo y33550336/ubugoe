@@ -9,6 +9,10 @@ import (
 	traq "github.com/traPtitech/go-traq"
 )
 
+type Message struct {
+	Content  string `json:"content"`
+	UserName string `json:"userName"`
+}
 
 func main() {
 	token := os.Getenv("TRAQ_TOKEN")
@@ -22,9 +26,13 @@ func main() {
 		userID := c.Param("userId")
 		//fmt.Println(channelID)
 
-		channelList, _, _ := client.ChannelApi.GetChannels(auth).Path("gps/times/" + userID).
+		channelList, _, err := client.ChannelApi.GetChannels(auth).Path("gps/times/" + userID).
 			Execute()
-		if len(channelList.Public) == 0{
+		if err != nil {
+			c.Logger().Error(err)
+			return c.String(500, "something wrong")
+		}
+		if len(channelList.Public) == 0 {
 			return c.String(404, "No channel")
 		}
 
@@ -37,12 +45,15 @@ func main() {
 			Order("asc").
 			Execute()
 
-		messageContents := make([]string, 0, len(messages))
+		res := make([]Message, 0, len(messages))
 		for _, message := range messages {
-			messageContents = append(messageContents, message.Content)
+			res = append(res, Message{
+				Content:  message.Content,
+				UserName: message.UserId,
+			})
 		}
 
-		return c.JSON(200, messageContents)
+		return c.JSON(200, res)
 	})
 
 	e.Start(":8080")
