@@ -7,6 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	traq "github.com/traPtitech/go-traq"
+
+	"fmt"
 )
 
 type Message struct {
@@ -24,7 +26,7 @@ func main() {
 
 	e.GET("/ubugoe/:userId", func(c echo.Context) error {
 		userID := c.Param("userId")
-		//fmt.Println(channelID)
+		fmt.Println(userID)
 
 		channelList, _, err := client.ChannelApi.GetChannels(auth).Path("gps/times/" + userID).
 			Execute()
