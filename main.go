@@ -11,10 +11,12 @@ import (
 	"fmt"
 )
 
+
 type Message struct {
 	Content  string `json:"content"`
 	UserName string `json:"userName"`
 }
+
 
 func main() {
 	token := os.Getenv("TRAQ_TOKEN")
