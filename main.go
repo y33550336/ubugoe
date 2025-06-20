@@ -41,6 +41,9 @@ func main() {
 		channel := channelList.Public[0]
 		channelID := channel.Id
 
+		fmt.Println(channel)
+		fmt.Println(channelID)
+
 		messages, _, _ := client.ChannelApi.GetMessages(auth, channelID).
 			Since(time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local)).
 			Limit(10).
@@ -49,9 +52,17 @@ func main() {
 
 		res := make([]Message, 0, len(messages))
 		for _, message := range messages {
+
+			userNameList, _, err := client.UserApi.GetUser(auth, message.UserId).Execute()
+			if err != nil {
+				c.Logger().Error(err)
+				return c.String(500, "something wrong")
+			}
+			userName := userNameList.Name
+
 			res = append(res, Message{
 				Content:  message.Content,
-				UserName: message.UserId,
+				UserName: userName,
 			})
 		}
 
